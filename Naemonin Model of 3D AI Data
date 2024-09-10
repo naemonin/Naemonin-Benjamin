@@ -1,0 +1,214 @@
+import bpy
+import math
+# Delete default cube
+bpy.ops.object.select_all(action='DESELECT')
+if bpy.context.object:
+ bpy.context.object.select_set(True)
+ bpy.ops.object.delete()
+# Create a ring (Torus)
+bpy.ops.mesh.primitive_torus_add(
+ major_radius=1.025, # Half of the x dimension (2.05m / 2)
+ minor_radius=0.02825, # Half of the z dimension (0.0565m / 2)
+ location=(0, 0, 0)
+)
+# Get the current object (ring)
+ring = bpy.context.object
+# Set location, rotation, and scale
+ring.location = (0, 0, 0)
+# Rotation in degrees, need to convert to radians
+ring.rotation_euler = (
+ math.radians(3240), # Rotation around X axis
+ math.radians(1440), # Rotation around Y axis
+ math.radians(360) # Rotation around Z axis
+)
+# Set scale (no need to adjust as scale is 1,1,1)
+ring.scale = (1, 1, 1)
+# Apply scale and rotation
+bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+print("Ring created with the desired properties!")
+# Ensure we are starting fresh
+bpy.ops.object.select_all(action='DESELECT')
+if bpy.context.object:
+ bpy.context.object.select_set(True)
+ bpy.ops.object.delete()
+# Create a ring (Torus)
+bpy.ops.mesh.primitive_torus_add(
+ major_radius=1.025, # Half of the x dimension (2.05m / 2)
+ minor_radius=0.02825, # Half of the z dimension (0.0565m / 2)
+  location=(0, 0, 0)
+)
+# Get the current object (ring)
+ring = bpy.context.object
+# Set initial transformation (frame 1)
+ring.location = (0, 0, 0)
+ring.rotation_euler = (0, 0, 0)
+ring.scale = (0, 0, 0)
+# Insert keyframe for initial state
+ring.keyframe_insert(data_path="location", frame=1)
+ring.keyframe_insert(data_path="rotation_euler", frame=1)
+ring.keyframe_insert(data_path="scale", frame=1)
+# Set final transformation (frame 360)
+ring.location = (0, 0, 0)
+ring.rotation_euler = (
+ math.radians(360), # Rotation around X axis
+ math.radians(720), # Rotation around Y axis
+ math.radians(1080) # Rotation around Z axis
+)
+ring.scale = (1, 1, 1)
+# Insert keyframe for final state
+ring.keyframe_insert(data_path="location", frame=360)
+ring.keyframe_insert(data_path="rotation_euler", frame=360)
+ring.keyframe_insert(data_path="scale", frame=360)
+# Set up the timeline
+bpy.context.scene.frame_start = 1
+bpy.context.scene.frame_end = 360
+print("Animation created from frame 1 to 360!")
+import bpy
+import math
+
+# Create a cylinder
+bpy.ops.mesh.primitive_cylinder_add(
+ radius=0.01, # Radius for the x and y dimensions
+ depth=2, # Depth for the z dimension
+ location=(0, 0, 0)
+)
+ # Get the current object (cylinder)
+cylinder = bpy.context.object
+# Set scale
+cylinder.scale = (0.005, 0.005, 1)
+# Set rotation in degrees (convert to radians)
+cylinder.rotation_euler = (
+ math.radians(540), # Rotation around X axis
+ math.radians(2160), # Rotation around Y axis
+ math.radians(3240) # Rotation around Z axis
+)
+# Set location
+cylinder.location = (0, 0, 0)
+# Apply transformations
+bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+print("Cylinder created with the desired properties!")
+
+# Create a cylinder
+bpy.ops.mesh.primitive_cylinder_add(
+ radius=0.01, # Radius for the x and y dimensions
+ depth=2, # Depth for the z dimension
+ location=(0, 0, 0)
+)
+# Get the current object (cylinder)
+cylinder = bpy.context.object
+# Set initial transformation (frame 1)
+cylinder.scale = (1, 1, 0)
+cylinder.rotation_euler = (0, 0, 0)
+# Insert keyframes for initial state
+cylinder.keyframe_insert(data_path="scale", frame=1)
+cylinder.keyframe_insert(data_path="rotation_euler", frame=1)
+# Set final transformation (frame 360)
+cylinder.scale = (1, 1, 1)
+cylinder.rotation_euler = (
+ math.radians(540), # Rotation around X axis
+ math.radians(2160), # Rotation around Y axis
+ math.radians(3240) # Rotation around Z axis
+)
+# Insert keyframes for final state
+cylinder.keyframe_insert(data_path="scale", frame=360)
+cylinder.keyframe_insert(data_path="rotation_euler", frame=360)
+# Set up the timeline
+bpy.context.scene.frame_start = 1
+bpy.context.scene.frame_end = 360
+print("Cylinder animation created from frame 1 to 360!")
+import bpy
+import math
+
+# Function to check intersection between cylinder and torus
+def check_intersection(torus_radius, torus_thickness, cylinder_radius, cylinder_position):
+    # The torus' outer radius is the sum of the major radius and the minor radius (thickness)
+    torus_outer_radius = torus_radius + torus_thickness
+    
+    # Check the distance from the origin (cylinder's position is at the origin for now)
+    distance_to_origin = math.sqrt(cylinder_position[0]**2 + cylinder_position[1]**2)
+    
+    # If the distance to the origin matches the torus radius, we have an intersection
+    return abs(distance_to_origin - torus_outer_radius) <= cylinder_radius
+
+# Delete default cube
+bpy.ops.object.select_all(action='DESELECT')
+if bpy.context.object:
+    bpy.context.object.select_set(True)
+    bpy.ops.object.delete()
+
+# Create the torus (ring)
+bpy.ops.mesh.primitive_torus_add(
+    major_radius=1.025,  # Half of the x dimension (2.05m / 2)
+    minor_radius=0.02825,  # Half of the z dimension (0.0565m / 2)
+    location=(0, 0, 0)
+)
+ring = bpy.context.object  # Get the torus object
+
+# Set up the cylinder
+bpy.ops.mesh.primitive_cylinder_add(
+    radius=0.01,  # Radius for the x and y dimensions
+    depth=2,      # Depth for the z dimension
+    location=(0, 0, 0)
+)
+cylinder = bpy.context.object  # Get the cylinder object
+
+# Keyframe-based animation parameters
+start_frame = 1
+end_frame = 360
+bpy.context.scene.frame_start = start_frame
+bpy.context.scene.frame_end = end_frame
+
+# Set up torus animation (initial state at frame 1)
+ring.location = (0, 0, 0)
+ring.rotation_euler = (0, 0, 0)
+ring.scale = (0, 0, 0)
+ring.keyframe_insert(data_path="location", frame=start_frame)
+ring.keyframe_insert(data_path="rotation_euler", frame=start_frame)
+ring.keyframe_insert(data_path="scale", frame=start_frame)
+
+# Set torus final transformation (at frame 360)
+ring.rotation_euler = (
+    math.radians(360),  # Rotation around X axis
+    math.radians(720),  # Rotation around Y axis
+    math.radians(1080)  # Rotation around Z axis
+)
+ring.scale = (1, 1, 1)
+ring.keyframe_insert(data_path="location", frame=end_frame)
+ring.keyframe_insert(data_path="rotation_euler", frame=end_frame)
+ring.keyframe_insert(data_path="scale", frame=end_frame)
+
+# Set up cylinder animation (initial state at frame 1)
+cylinder.scale = (1, 1, 0)
+cylinder.rotation_euler = (0, 0, 0)
+cylinder.keyframe_insert(data_path="scale", frame=start_frame)
+cylinder.keyframe_insert(data_path="rotation_euler", frame=start_frame)
+
+# Set cylinder final transformation (at frame 360)
+cylinder.scale = (1, 1, 1)
+cylinder.rotation_euler = (
+    math.radians(540),   # Rotation around X axis
+    math.radians(2160),  # Rotation around Y axis
+    math.radians(3240)   # Rotation around Z axis
+)
+cylinder.keyframe_insert(data_path="scale", frame=end_frame)
+cylinder.keyframe_insert(data_path="rotation_euler", frame=end_frame)
+
+# Detect intersections during the animation
+intersect_frames = []
+for frame in range(start_frame, end_frame + 1):
+    bpy.context.scene.frame_set(frame)
+    
+    # Get cylinder's current position and scale
+    cylinder_pos = cylinder.matrix_world.to_translation()
+    cylinder_radius = cylinder.dimensions.x / 2  # Radius of the cylinder's cross-section (X/Y dimension)
+    
+    # Get torus' properties
+    torus_radius = 1.025  # Major radius (X/Y)
+    torus_thickness = 0.02825  # Minor radius (Z thickness)
+    
+    # Check for intersection
+    if check_intersection(torus_radius, torus_thickness, cylinder_radius, cylinder_pos):
+        intersect_frames.append(frame)
+
+# Output the frames where intersections occur
+print(f"Intersections occur at frames: {intersect_frames}")
